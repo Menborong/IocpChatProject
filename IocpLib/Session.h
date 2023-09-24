@@ -31,6 +31,7 @@ public:
 	void Connect(NetAddress addr) const;
 	void Disconnect() const;
 	void Send(ref<SendBuffer>& sendBuffer) const;
+	UINT32 GetRecvMessage(BYTE* buffer, UINT32 size) const { return _receiver->GetRecvMessage(buffer, size); }
 
 protected:
 	void Recv(); // This function cannot be called from outside

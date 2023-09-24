@@ -10,6 +10,21 @@ Receiver::~Receiver()
 {
 }
 
+UINT32 Receiver::GetRecvMessage(BYTE* buffer, UINT32 size)
+{
+	UINT32 totalLen = 0;
+	while(size - totalLen)
+	{
+		BYTE* data = _recvBuffer.GetReadBuffer();
+		const UINT32 len = _recvBuffer.Read(size - totalLen);
+		if (len == 0)
+			break;
+		memcpy(buffer + totalLen, data, len);
+		totalLen += len;
+	}
+	return totalLen;
+}
+
 void Receiver::Register()
 {
 	_isRunning.store(true);

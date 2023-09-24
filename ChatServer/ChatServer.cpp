@@ -36,7 +36,11 @@ public:
 	}
 	void OnRecv()
 	{
-		std::cout << "OnRecv" << std::endl;
+		std::cout << "OnRecv: ";
+		char buf[1024] = {0};
+		UINT len = GetRecvMessage(reinterpret_cast<BYTE*>(buf), 1024);
+		std::cout << buf << std::endl;
+		
 		Recv();
 	}
 	void OnError(int errCode)
