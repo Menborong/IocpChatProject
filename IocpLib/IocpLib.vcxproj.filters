@@ -1,0 +1,130 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Address">
+      <UniqueIdentifier>{18057577-7455-4dc2-8f3d-2744c88ac7e8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Pch">
+      <UniqueIdentifier>{cdef6837-e25b-4522-8a9a-55f054638bdd}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Utility">
+      <UniqueIdentifier>{fcc4477e-6e9b-4a82-a445-5ad19322af76}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="IocpEvent">
+      <UniqueIdentifier>{864075a8-8224-409f-a0d1-5578f8476c1a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="IocpObject">
+      <UniqueIdentifier>{de7f2036-3175-4a13-ad83-d4aac20ef85b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="IocpCore">
+      <UniqueIdentifier>{c3e1127e-02e9-47b2-ac18-f1f4c5c7f7f0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Service">
+      <UniqueIdentifier>{9c8d9717-577b-46c3-b2ce-7446785718f5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="IocpObject\Session">
+      <UniqueIdentifier>{2362b482-6c29-46bb-b43e-fbfbc121e415}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="pch.h">
+      <Filter>Pch</Filter>
+    </ClInclude>
+    <ClInclude Include="NetAddress.h">
+      <Filter>Address</Filter>
+    </ClInclude>
+    <ClInclude Include="CorePch.h">
+      <Filter>Pch</Filter>
+    </ClInclude>
+    <ClInclude Include="Types.h">
+      <Filter>Pch</Filter>
+    </ClInclude>
+    <ClInclude Include="SocketUtils.h">
+      <Filter>Utility</Filter>
+    </ClInclude>
+    <ClInclude Include="IocpEvent.h">
+      <Filter>IocpEvent</Filter>
+    </ClInclude>
+    <ClInclude Include="IocpCore.h">
+      <Filter>IocpCore</Filter>
+    </ClInclude>
+    <ClInclude Include="Listener.h">
+      <Filter>IocpObject</Filter>
+    </ClInclude>
+    <ClInclude Include="Service.h">
+      <Filter>Service</Filter>
+    </ClInclude>
+    <ClInclude Include="RecvBuffer.h" />
+    <ClInclude Include="SendBuffer.h" />
+    <ClInclude Include="SessionNetOp.h">
+      <Filter>IocpObject\Session</Filter>
+    </ClInclude>
+    <ClInclude Include="Session.h">
+      <Filter>IocpObject\Session</Filter>
+    </ClInclude>
+    <ClInclude Include="Sender.h">
+      <Filter>IocpObject\Session</Filter>
+    </ClInclude>
+    <ClInclude Include="Acceptor.h">
+      <Filter>IocpObject\Session</Filter>
+    </ClInclude>
+    <ClInclude Include="Connector.h">
+      <Filter>IocpObject\Session</Filter>
+    </ClInclude>
+    <ClInclude Include="Receiver.h">
+      <Filter>IocpObject\Session</Filter>
+    </ClInclude>
+    <ClInclude Include="Disconnector.h">
+      <Filter>IocpObject\Session</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="pch.cpp">
+      <Filter>Pch</Filter>
+    </ClCompile>
+    <ClCompile Include="NetAddress.cpp">
+      <Filter>Address</Filter>
+    </ClCompile>
+    <ClCompile Include="CorePch.cpp">
+      <Filter>Pch</Filter>
+    </ClCompile>
+    <ClCompile Include="SocketUtils.cpp">
+      <Filter>Utility</Filter>
+    </ClCompile>
+    <ClCompile Include="IocpEvent.cpp">
+      <Filter>IocpEvent</Filter>
+    </ClCompile>
+    <ClCompile Include="IocpCore.cpp">
+      <Filter>IocpCore</Filter>
+    </ClCompile>
+    <ClCompile Include="Listener.cpp">
+      <Filter>IocpObject</Filter>
+    </ClCompile>
+    <ClCompile Include="Service.cpp">
+      <Filter>Service</Filter>
+    </ClCompile>
+    <ClCompile Include="RecvBuffer.cpp" />
+    <ClCompile Include="SendBuffer.cpp" />
+    <ClCompile Include="SessionNetOp.cpp">
+      <Filter>IocpObject\Session</Filter>
+    </ClCompile>
+    <ClCompile Include="Session.cpp">
+      <Filter>IocpObject\Session</Filter>
+    </ClCompile>
+    <ClCompile Include="Sender.cpp">
+      <Filter>IocpObject\Session</Filter>
+    </ClCompile>
+    <ClCompile Include="Acceptor.cpp">
+      <Filter>IocpObject\Session</Filter>
+    </ClCompile>
+    <ClCompile Include="Connector.cpp">
+      <Filter>IocpObject\Session</Filter>
+    </ClCompile>
+    <ClCompile Include="Receiver.cpp">
+      <Filter>IocpObject\Session</Filter>
+    </ClCompile>
+    <ClCompile Include="Disconnector.cpp">
+      <Filter>IocpObject\Session</Filter>
+    </ClCompile>
+  </ItemGroup>
+</Project>
