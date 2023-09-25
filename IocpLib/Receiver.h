@@ -10,7 +10,7 @@ public:
 	~Receiver();
 
 	UINT32 GetRecvMessage(BYTE* buffer, UINT32 size);
-	void Register() override;
+	void Register(ref<IocpObject> owner) override;
 	void Process(bool ret, DWORD numBytes) override;
 
 private:

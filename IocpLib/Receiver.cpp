@@ -25,10 +25,12 @@ UINT32 Receiver::GetRecvMessage(BYTE* buffer, UINT32 size)
 	return totalLen;
 }
 
-void Receiver::Register()
+void Receiver::Register(ref<IocpObject> owner)
 {
-	_isRunning.store(true);
-	_event.Init();
+	if (_isRunning.exchange(true) == true)
+		return;
+
+	_event.owner = owner;
 	_event.op = shared_from_this();
 
 	WSABUF wsaBuf;
@@ -43,7 +45,7 @@ void Receiver::Register()
 		int errorCode = ::WSAGetLastError();
 		if (errorCode != WSA_IO_PENDING)
 		{
-			_event.op = nullptr; // release the reference
+			_event.Clear();
 			_isRunning.store(false);
 			_onError(errorCode);
 		}
@@ -55,7 +57,7 @@ void Receiver::Process(bool ret, DWORD numBytes)
 	if (numBytes == 0)
 	{
 		// Client: normal disconnect
-		_event.op = nullptr; // release the reference
+		_event.Clear();
 		_isRunning.store(false);
 		_onError(0);
 		return;
@@ -67,7 +69,7 @@ void Receiver::Process(bool ret, DWORD numBytes)
 		assert(false);
 	}
 
-	_event.op = nullptr; // release the reference
+	_event.Clear();
 	_isRunning.store(false);
 	_onProcess();
 }

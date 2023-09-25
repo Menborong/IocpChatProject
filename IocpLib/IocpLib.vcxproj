@@ -158,6 +158,7 @@
     <ClInclude Include="Disconnector.h" />
     <ClInclude Include="IocpCore.h" />
     <ClInclude Include="IocpEvent.h" />
+    <ClInclude Include="IocpObject.h" />
     <ClInclude Include="Receiver.h" />
     <ClInclude Include="RecvBuffer.h" />
     <ClInclude Include="SendBuffer.h" />
@@ -178,6 +179,7 @@
     <ClCompile Include="Disconnector.cpp" />
     <ClCompile Include="IocpCore.cpp" />
     <ClCompile Include="IocpEvent.cpp" />
+    <ClCompile Include="IocpObject.cpp" />
     <ClCompile Include="Receiver.cpp" />
     <ClCompile Include="RecvBuffer.cpp" />
     <ClCompile Include="SendBuffer.cpp" />

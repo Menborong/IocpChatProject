@@ -1,5 +1,6 @@
 #pragma once
 #include <atomic>
+#include "iocpObject.h"
 
 /*-----------------------------------------------------------
  *  SessionNetOp
@@ -20,11 +21,13 @@ public:
 	virtual ~SessionNetOp() = default;
 	void SetSocket(SOCKET socket) { _socket = socket; }
 
-	virtual void Register() = 0;
+	virtual void Register(ref<IocpObject> owner) = 0;
 	virtual void Process(bool ret, DWORD numBytes) = 0;
 
 	void OnProcess() const { if(_onProcess) _onProcess(); }
 	void OnError(int errCode) const { if(_onError) _onError(errCode); }
+
+	bool IsRunning() const { return _isRunning.load(); }
 
 protected:
 	SOCKET _socket = INVALID_SOCKET;

@@ -17,13 +17,13 @@ void Sender::Push(ref<SendBuffer>& buffer)
 	_sendQueue.emplace(buffer);
 }
 
-void Sender::Register()
+void Sender::Register(ref<IocpObject> owner)
 {
 	// Caution: Thread-Safety
 	if(_isRunning.exchange(true) == true)
 		return;
 
-	_event.Init();
+	_event.owner = owner;
 	_event.op = shared_from_this();
 
 	// Scatter-Gather I/O
@@ -32,7 +32,7 @@ void Sender::Register()
 
 		if(_sendQueue.empty())
 		{
-			_event.op = nullptr; // release the reference
+			_event.Clear();
 			_isRunning.store(false);
 			return;
 		}
@@ -70,7 +70,7 @@ void Sender::Register()
 		if (errCode != WSA_IO_PENDING)
 		{
 			_sendingBufs.clear();
-			_event.op = nullptr; // release the reference
+			_event.Clear();
 			_isRunning.store(false);
 			_onError(errCode);
 			return;
@@ -85,12 +85,12 @@ void Sender::Process(bool ret, DWORD numBytes)
 	if (numBytes == 0)
 	{
 		// normal disconnect from remote
-		_event.op = nullptr; // release ref
+		_event.Clear();
 		_isRunning.store(false);
 		_onError(0);
 	}
 
-	_event.op = nullptr; // release the reference
+	_event.Clear();
 	_isRunning.store(false);
 	_onProcess();
 }

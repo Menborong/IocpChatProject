@@ -34,38 +34,38 @@ void Session::Init()
 }
 
 
-void Session::Accept() const
+void Session::Accept()
 {
 	if (_acceptor)
-		_acceptor->Register();
+		_acceptor->Register(GetRef());
 }
 
-void Session::Connect(NetAddress addr) const
+void Session::Connect(NetAddress addr)
 {
 	if (_connector)
 	{
 		_connector->SetAddress(addr);
-		_connector->Register();
+		_connector->Register(GetRef());
 	}
 }
 
-void Session::Disconnect() const
+void Session::Disconnect()
 {
 	if (_disconnector)
-		_disconnector->Register();
+		_disconnector->Register(GetRef());
 }
 
-void Session::Send(ref<SendBuffer>& sendBuffer) const
+void Session::Send(ref<SendBuffer>& sendBuffer)
 {
 	if (_sender)
 	{
 		_sender->Push(sendBuffer);
-		_sender->Register();
+		_sender->Register(GetRef());
 	}
 }
 
 void Session::Recv()
 {
 	if (_receiver)
-		_receiver->Register();
+		_receiver->Register(GetRef());
 }

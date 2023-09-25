@@ -1,10 +1,20 @@
 #pragma once
 #include "IocpCore.h"
+#include "IocpObject.h"
 #include "Acceptor.h"
 #include "Connector.h"
 #include "Disconnector.h"
 #include "Sender.h"
 #include "Receiver.h"
+
+enum class SessionStatus
+{
+	Idle,			// Not connected and initialized
+	Ready,			// Ready to connect
+	Connecting,		// Connecting to remote (Accepting or Connecting)
+	Running,		// Connected to remote
+	Disconnecting,	// Disconnecting from remote
+};
 
 /*---------------------------------------------------------------------------
  * Session
@@ -14,7 +24,7 @@
  * 해당 클래스의 상속을 통해 콜백함수를 정의하고 통신 이후의 처리를 구현 가능
  ----------------------------------------------------------------------------*/
 
-class Session
+class Session: public IocpObject
 {
 public:
 	Session(ref<IocpCore>& iocpCore, ref<Listener> listener, ref<Acceptor> acceptor, ref<Connector> connector, 
@@ -27,10 +37,10 @@ public:
 public:
 	// functions for outside
 	SOCKET GetSocket() const { return _socket; }
-	void Accept() const;
-	void Connect(NetAddress addr) const;
-	void Disconnect() const;
-	void Send(ref<SendBuffer>& sendBuffer) const;
+	void Accept();
+	void Connect(NetAddress addr);
+	void Disconnect();
+	void Send(ref<SendBuffer>& sendBuffer);
 	UINT32 GetRecvMessage(BYTE* buffer, UINT32 size) const { return _receiver->GetRecvMessage(buffer, size); }
 
 protected:
@@ -41,6 +51,11 @@ private:
 	ref<IocpCore> _iocpCore;
 	ref<Listener> _listener; // Only for server service (Client Session)
 
+	// Session Status
+	std::atomic<SessionStatus> _status{SessionStatus::Idle};
+	std::atomic<UINT32> _eventCount{0};
+
+	// Network operations
 	ref<Acceptor> _acceptor; // Only for server service (Server Session)
 	ref<Connector> _connector; // Only for client service (Client Session)
 	ref<Disconnector> _disconnector;

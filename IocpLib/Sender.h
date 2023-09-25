@@ -10,7 +10,7 @@ public:
 	~Sender();
 
 	void Push(ref<SendBuffer>& buffer);
-	void Register() override;
+	void Register(ref<IocpObject> owner) override;
 	void Process(bool ret, DWORD numBytes) override;
 
 private:
