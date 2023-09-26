@@ -11,9 +11,8 @@ enum class SessionStatus
 {
 	Idle,			// Not connected and initialized
 	Ready,			// Ready to connect
-	Connecting,		// Connecting to remote (Accepting or Connecting)
 	Running,		// Connected to remote
-	Disconnecting,	// Disconnecting from remote
+	Stop, 			// Stopped (Registration is not possible except for Disconnect)
 };
 
 /*---------------------------------------------------------------------------
@@ -42,6 +41,7 @@ public:
 	void Disconnect();
 	void Send(ref<SendBuffer>& sendBuffer);
 	UINT32 GetRecvMessage(BYTE* buffer, UINT32 size) const { return _receiver->GetRecvMessage(buffer, size); }
+	UINT32 GetNumActiveOperation() const;
 
 protected:
 	void Recv(); // This function cannot be called from outside
@@ -53,7 +53,7 @@ private:
 
 	// Session Status
 	std::atomic<SessionStatus> _status{SessionStatus::Idle};
-	std::atomic<UINT32> _eventCount{0};
+	//std::atomic<UINT32> _eventCount{0};
 
 	// Network operations
 	ref<Acceptor> _acceptor; // Only for server service (Server Session)

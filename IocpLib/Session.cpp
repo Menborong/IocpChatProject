@@ -64,6 +64,23 @@ void Session::Send(ref<SendBuffer>& sendBuffer)
 	}
 }
 
+UINT32 Session::GetNumActiveOperation() const
+{
+	// 대상 연산이 많지 않으므로 모든 연산을 검사
+	UINT32 num = 0;
+	if(_acceptor)
+		num += _acceptor->IsRunning();
+	if(_connector)
+		num += _connector->IsRunning();
+	if(_disconnector)
+		num += _disconnector->IsRunning();
+	if(_sender)
+		num += _sender->IsRunning();
+	if(_receiver)
+		num += _receiver->IsRunning();
+	return num;
+}
+
 void Session::Recv()
 {
 	if (_receiver)
