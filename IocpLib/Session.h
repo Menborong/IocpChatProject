@@ -61,4 +61,7 @@ private:
 	ref<Disconnector> _disconnector;
 	ref<Sender> _sender;
 	ref<Receiver> _receiver;
+
+	// Callback functions
+	std::function<void(ref<Session>)> _onRelease; // Called when session is disconnected
 };
