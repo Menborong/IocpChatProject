@@ -1,3 +1,25 @@
+#pragma once
+#include "IocpCore.h"
+#include "Session.h"
+
+class Service
+{
+public:
+	Service() = default;
+	~Service() = default;
+
+public:
+	ref<Session> CreateSession() const { return _sessionFactory(); }
+	void ReleaseSession(ref<Session> session);
+
+private:
+	std::set<ref<Session>> _sessions;
+	std::mutex _sessionsLock;
+
+	std::function<ref<Session>()> _sessionFactory = nullptr;
+};
+
+
 //#pragma once
 //#include "IocpCore.h"
 //#include "NetAddress.h"
