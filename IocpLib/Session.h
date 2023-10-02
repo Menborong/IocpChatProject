@@ -6,6 +6,7 @@
 #include "Disconnector.h"
 #include "Sender.h"
 #include "Receiver.h"
+#include "Packet.h"
 
 enum class SessionStatus
 {
@@ -26,7 +27,7 @@ enum class SessionStatus
 class Session: public IocpObject
 {
 public:
-	Session(ref<IocpCore>& iocpCore, ref<Listener> listener, ref<Acceptor> acceptor, ref<Connector> connector, 
+	Session(ref<IocpCore>& iocpCore, ref<Acceptor> acceptor, ref<Connector> connector, 
 		ref<Disconnector> disconnector, ref<Sender> sender, ref<Receiver> receiver);
 	~Session() = default;
 
@@ -36,11 +37,11 @@ public:
 public:
 	// functions for outside
 	SOCKET GetSocket() const { return _socket; }
-	void Accept();
+	void Accept(ref<Listener>& listener);
 	void Connect(NetAddress addr);
 	void Disconnect();
-	void Send(ref<SendBuffer>& sendBuffer);
-	UINT32 GetRecvMessage(BYTE* buffer, UINT32 size) const { return _receiver->GetRecvMessage(buffer, size); }
+	void Send(ref<Packet>& packet);
+	ref<Packet> GetRecvPacket() const { return _receiver->GetRecvPacket(); }
 	UINT32 GetNumActiveOperation() const;
 
 protected:
@@ -49,7 +50,6 @@ protected:
 private:
 	SOCKET _socket = INVALID_SOCKET;
 	ref<IocpCore> _iocpCore;
-	ref<Listener> _listener; // Only for server service (Client Session)
 
 	// Session Status
 	std::atomic<SessionStatus> _status{SessionStatus::Idle};

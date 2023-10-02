@@ -2,19 +2,20 @@
 
 #include "SocketUtils.h"
 #include "Session.h"
+#include "RecvBuffer.h"
 
 
 class ServerSession : public Session
 {
 public:
 	ServerSession(ref<IocpCore>& iocpCore)
-		: Session(
-			iocpCore, nullptr,
+		: Session(	
+			iocpCore,
 			nullptr,
 			std::make_shared<Connector>([this] { OnConnect(); }, [this](int errCode) { OnError(errCode); }),
 			std::make_shared<Disconnector>([this] { OnDisconnect(); }, [this](int errCode) { OnError(errCode); }),
 			std::make_shared<Sender>([this] { OnSend(); }, [this](int errCode) { OnError(errCode); }),
-			std::make_shared<Receiver>([this] { OnRecv(); }, [this](int errCode) { OnError(errCode); })
+			std::make_shared<Receiver>([this] { OnRecv(); }, [this](int errCode) { OnError(errCode); }, std::make_shared<RecvBuffer>(0x10000))
 		)
 	{}
 
@@ -25,9 +26,8 @@ public:
 		std::cout << "OnConnect" << std::endl;
 		Recv();
 		std::string str = "Hello World!";
-		ref<SendBuffer> sendBuffer = std::make_shared<SendBuffer>(str.size());
-		sendBuffer->Write(str.c_str(), static_cast<UINT32>(str.size()));
-		Send(sendBuffer);
+		ref<Packet> packet = std::make_shared<Packet>(reinterpret_cast<const BYTE*>(str.data()), static_cast<UINT32>(str.size()), PacketType::Chat);
+		Send(packet);
 	}
 	void OnDisconnect()
 	{

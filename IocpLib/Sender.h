@@ -1,6 +1,6 @@
 #pragma once
 #include "SessionNetOp.h"
-#include "SendBuffer.h"
+#include "Packet.h"
 #include "IocpEvent.h"
 
 class Sender: public SessionNetOp
@@ -9,15 +9,14 @@ public:
 	Sender(const std::function<void()>& onProcees, const std::function<void(int errCode)>& onError);
 	~Sender();
 
-	void Push(ref<SendBuffer>& buffer);
+	void Push(const ref<Packet>& packet);
 	void Register(ref<IocpObject> owner) override;
 	void Process(bool ret, DWORD numBytes) override;
 
 private:
 	SendEvent _event = {};
 	std::mutex _mutex;
-	std::queue<ref<SendBuffer>> _sendQueue;
-	std::vector<ref<SendBuffer>> _sendingBufs;
-
+	std::queue<ref<Packet>> _packetQueue;
+	std::vector<ref<Packet>> _sendingPackets;
 };
 

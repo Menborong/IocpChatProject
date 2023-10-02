@@ -9,14 +9,15 @@ class ClientSession : public Session
 public:
 	ClientSession(ref<IocpCore>& iocpCore, ref<Listener>& listener)
 		: Session(
-			iocpCore, listener,
-			std::make_shared<Acceptor>([this] { OnAccept(); }, [this](int errCode) { OnError(errCode); }, listener),
+			iocpCore,
+			std::make_shared<Acceptor>([this] { OnAccept(); }, [this](int errCode) { OnError(errCode); }),
 			nullptr,
 			std::make_shared<Disconnector>([this] { OnDisconnect(); }, [this](int errCode) { OnError(errCode); }),
 			std::make_shared<Sender>([this] { OnSend(); }, [this](int errCode) { OnError(errCode); }),
-			std::make_shared<Receiver>([this] { OnRecv(); }, [this](int errCode) { OnError(errCode); })
+			std::make_shared<Receiver>([this] { OnRecv(); }, [this](int errCode) { OnError(errCode); }, std::make_shared<RecvBuffer>(0x10000))
 		)
-	{}
+	{
+	}
 
 	// Callback functions
 	void OnAccept()
@@ -28,7 +29,6 @@ public:
 	void OnDisconnect()
 	{
 		std::cout << "OnDisconnect" << std::endl;
-		Accept();
 	}
 	void OnSend()
 	{
@@ -37,9 +37,16 @@ public:
 	void OnRecv()
 	{
 		std::cout << "OnRecv: ";
-		char buf[1024] = {0};
-		UINT len = GetRecvMessage(reinterpret_cast<BYTE*>(buf), 1024);
-		std::cout << buf << std::endl;
+		while(true)
+		{
+			ref<Packet> packet = GetRecvPacket();
+			if (packet == nullptr)
+				break;
+
+			std::string str(reinterpret_cast<const char*>(packet->GetBody()), packet->GetBodySize());
+			std::cout << str << "// ";
+		}
+		std::cout << std::endl;
 		
 		Recv();
 	}
@@ -74,7 +81,7 @@ int main()
 	{
 		sessions.emplace_back(std::make_shared<ClientSession>(iocpCore, listener));
 		sessions[i]->Init();
-		sessions[i]->Accept();
+		sessions[i]->Accept(listener);
 	}
 
 

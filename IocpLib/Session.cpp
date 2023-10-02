@@ -3,9 +3,9 @@
 
 #include "SocketUtils.h"
 
-Session::Session(ref<IocpCore>& iocpCore, ref<Listener> listener, ref<Acceptor> acceptor, ref<Connector> connector,
+Session::Session(ref<IocpCore>& iocpCore, ref<Acceptor> acceptor, ref<Connector> connector,
 	ref<Disconnector> disconnector, ref<Sender> sender, ref<Receiver> receiver)
-		: _iocpCore(iocpCore), _listener(listener), _acceptor(acceptor), _connector(connector), _disconnector(disconnector),
+		: _iocpCore(iocpCore), _acceptor(acceptor), _connector(connector), _disconnector(disconnector),
  		_sender(sender), _receiver(receiver)
 {
 }
@@ -34,10 +34,13 @@ void Session::Init()
 }
 
 
-void Session::Accept()
+void Session::Accept(ref<Listener>& listener)
 {
 	if (_acceptor)
+	{
+		_acceptor->SetListener(listener);
 		_acceptor->Register(GetRef());
+	}
 }
 
 void Session::Connect(NetAddress addr)
@@ -55,11 +58,11 @@ void Session::Disconnect()
 		_disconnector->Register(GetRef());
 }
 
-void Session::Send(ref<SendBuffer>& sendBuffer)
+void Session::Send(ref<Packet>& packet)
 {
 	if (_sender)
 	{
-		_sender->Push(sendBuffer);
+		_sender->Push(packet);
 		_sender->Register(GetRef());
 	}
 }

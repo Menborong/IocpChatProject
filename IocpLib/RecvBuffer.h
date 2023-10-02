@@ -15,13 +15,17 @@ public:
 	~RecvBuffer();
 
 public:
-	BYTE* GetWriteBuffer() const { return &_buffer[_writePos]; }
-	BYTE* GetReadBuffer() const { return &_buffer[_readPos]; }
 	UINT32 GetNextWrite() const;
 	UINT32 GetNextRead() const;
-	UINT32 Write(UINT32 numBytes); // return the number of bytes written
-	UINT32 Read(UINT32 numBytes); // return the number of bytes read
+	UINT32 Write(UINT32 numBytes, BYTE* from);
+	UINT32 Read(UINT32 numBytes, BYTE* to);
 	void Clear();
+
+	BYTE* GetWriteBuffer() const { return &_buffer[_writePos]; }
+	BYTE* GetReadBuffer() const { return &_buffer[_readPos]; }
+
+	bool MoveWritePos(UINT32 numBytes);
+	bool MoveReadPos(UINT32 numBytes);
 
 private:
 	UINT32 _capacity = 0;

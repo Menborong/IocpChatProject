@@ -1,28 +1,28 @@
 #include "pch.h"
 #include "Receiver.h"
 
-Receiver::Receiver(const std::function<void()>& onProcees, const std::function<void(int errCode)>& onError)
-	: SessionNetOp(onProcees, onError)
+Receiver::Receiver(const std::function<void()>& onProcees, const std::function<void(int errCode)>& onError, ref<RecvBuffer> recvBuffer)
+	: SessionNetOp(onProcees, onError), _recvBuffer(recvBuffer)
 {
 }
 
-Receiver::~Receiver()
+ref<Packet> Receiver::GetRecvPacket()
 {
-}
-
-UINT32 Receiver::GetRecvMessage(BYTE* buffer, UINT32 size)
-{
-	UINT32 totalLen = 0;
-	while(size - totalLen)
+	if(_tempPacket == nullptr)
 	{
-		BYTE* data = _recvBuffer.GetReadBuffer();
-		const UINT32 len = _recvBuffer.Read(size - totalLen);
-		if (len == 0)
-			break;
-		memcpy(buffer + totalLen, data, len);
-		totalLen += len;
+		_tempPacket = std::make_shared<Packet>();
 	}
-	return totalLen;
+
+	ref<Packet> packet = _tempPacket;
+	packet->Write(_recvBuffer);
+
+	if(packet->IsWriteComplete())
+	{
+		_tempPacket = nullptr;
+		return packet;
+	}
+
+	return nullptr;
 }
 
 void Receiver::Register(ref<IocpObject> owner)
@@ -34,15 +34,15 @@ void Receiver::Register(ref<IocpObject> owner)
 	_event.op = shared_from_this();
 
 	WSABUF wsaBuf;
-	wsaBuf.buf = reinterpret_cast<char*>(_recvBuffer.GetWriteBuffer());
-	wsaBuf.len = _recvBuffer.GetNextWrite();
+	wsaBuf.buf = reinterpret_cast<char*>(_recvBuffer->GetWriteBuffer());
+	wsaBuf.len = _recvBuffer->GetNextWrite();
 
 	DWORD numOfBytes = 0;
 	DWORD flags = 0;
 	const int ret = ::WSARecv(_socket, &wsaBuf, 1, &numOfBytes, &flags, &_event, nullptr);
 	if (ret == SOCKET_ERROR)
 	{
-		int errorCode = ::WSAGetLastError();
+		const int errorCode = ::WSAGetLastError();
 		if (errorCode != WSA_IO_PENDING)
 		{
 			_event.Clear();
@@ -63,7 +63,7 @@ void Receiver::Process(bool ret, DWORD numBytes)
 		return;
 	}
 
-	if (_recvBuffer.Write(numBytes) != numBytes)
+	if(_recvBuffer->MoveWritePos(numBytes) == false)
 	{
 		// 문제 발생 (?)
 		assert(false);

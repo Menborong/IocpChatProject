@@ -4,9 +4,8 @@
 #include "SocketUtils.h"
 
 
-Acceptor::Acceptor(const std::function<void()>& onProcees, const std::function<void(int errCode)>& onError,
-	ref<Listener>& listener)
-		: SessionNetOp(onProcees, onError), _listener(listener)
+Acceptor::Acceptor(const std::function<void()>& onProcees, const std::function<void(int errCode)>& onError)
+		: SessionNetOp(onProcees, onError)
 {
 }
 
