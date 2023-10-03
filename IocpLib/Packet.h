@@ -23,7 +23,7 @@ private:
 
 public:
 	Packet();
-	Packet(const BYTE* data, UINT16 size, PacketType type);
+	Packet(const BYTE* data, UINT16 msgSize, PacketType type);
 
 public:
 	//static ref<Packet> Create();

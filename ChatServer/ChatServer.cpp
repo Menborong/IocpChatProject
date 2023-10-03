@@ -4,37 +4,30 @@
 #include "Session.h"
 
 
-class ClientSession : public Session
+class ClientSession : public AcceptableSession
 {
 public:
-	ClientSession(ref<IocpCore>& iocpCore, ref<Listener>& listener)
-		: Session(
-			iocpCore,
-			std::make_shared<Acceptor>([this] { OnAccept(); }, [this](int errCode) { OnError(errCode); }),
-			nullptr,
-			std::make_shared<Disconnector>([this] { OnDisconnect(); }, [this](int errCode) { OnError(errCode); }),
-			std::make_shared<Sender>([this] { OnSend(); }, [this](int errCode) { OnError(errCode); }),
-			std::make_shared<Receiver>([this] { OnRecv(); }, [this](int errCode) { OnError(errCode); }, std::make_shared<RecvBuffer>(0x10000))
-		)
+	ClientSession(ref<IocpCore>& iocpCore)
+		: AcceptableSession(iocpCore)
 	{
 	}
 
 	// Callback functions
-	void OnAccept()
+	void OnAccept() override
 	{
 		std::cout << "OnAccept" << std::endl;
 		Recv();
 	}
 	//void Onconnect();
-	void OnDisconnect()
+	void OnDisconnect() override
 	{
 		std::cout << "OnDisconnect" << std::endl;
 	}
-	void OnSend()
+	void OnSend() override
 	{
 		std::cout << "OnSend" << std::endl;
 	}
-	void OnRecv()
+	void OnRecv() override
 	{
 		std::cout << "OnRecv: ";
 		while(true)
@@ -50,7 +43,7 @@ public:
 		
 		Recv();
 	}
-	void OnError(int errCode)
+	void OnError(int errCode) override
 	{
 		std::cout << "OnError: " << errCode << std::endl;
 		Disconnect();
@@ -73,17 +66,16 @@ int main()
 	NetAddress address(7777);
 	listener->Init(iocpCore, address);
 
-	ClientSession session(iocpCore, listener);
+	ClientSession session(iocpCore);
 	session.Init();
 
 	std::vector<ref<Session>> sessions;
-	for(int i=0; i<10; i++)
+	for (int i = 0; i < 100; i++)
 	{
-		sessions.emplace_back(std::make_shared<ClientSession>(iocpCore, listener));
+		sessions.emplace_back(std::make_shared<ClientSession>(iocpCore));
 		sessions[i]->Init();
 		sessions[i]->Accept(listener);
 	}
-
 
 	std::vector<std::thread> threads;
 	for (int i = 0; i < 8; i++)

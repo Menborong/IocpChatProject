@@ -89,3 +89,88 @@ void Session::Recv()
 	if (_receiver)
 		_receiver->Register(GetRef());
 }
+
+AcceptableSession::AcceptableSession(ref<IocpCore>& iocpCore)
+	: Session(iocpCore,
+		std::make_shared<Acceptor>([this] {AcceptCallback(); }, [this](int errCode) {ErrorCallback(errCode); }),
+		nullptr,
+		std::make_shared<Disconnector>([this] {DisconnectCallback(); }, [this](int errCode) {ErrorCallback(errCode); }),
+		std::make_shared<Sender>([this] {SendCallback(); }, [this](int errCode) {ErrorCallback(errCode); }),
+		std::make_shared<Receiver>([this] {RecvCallback(); }, [this](int errCode) {ErrorCallback(errCode); }, std::make_shared<RecvBuffer>(0x10000))
+	)
+{
+}
+
+void AcceptableSession::AcceptCallback()
+{
+	OnAccept();
+	// TODO: Add code to control the session
+}
+
+void AcceptableSession::DisconnectCallback()
+{
+	OnDisconnect();
+	// TODO: Add code to control the session
+
+}
+
+void AcceptableSession::SendCallback()
+{
+	OnSend();
+	// TODO: Add code to control the session
+}
+
+void AcceptableSession::RecvCallback()
+{
+	OnRecv();
+	// TODO: Add code to control the session
+}
+
+void AcceptableSession::ErrorCallback(int errCode)
+{
+	OnError(errCode);
+	// TODO: Add code to control the session
+}
+
+ConnectableSession::ConnectableSession(ref<IocpCore>& iocpCore)
+	: Session(iocpCore,
+		nullptr,
+		std::make_shared<Connector>([this] {ConnectCallback(); }, [this](int errCode) {ErrorCallback(errCode); }),
+		std::make_shared<Disconnector>([this] {DisconnectCallback(); }, [this](int errCode) {ErrorCallback(errCode); }),
+		std::make_shared<Sender>([this] {SendCallback(); }, [this](int errCode) {ErrorCallback(errCode); }),
+		std::make_shared<Receiver>([this] {RecvCallback(); }, [this](int errCode) {ErrorCallback(errCode); }, std::make_shared<RecvBuffer>(0x10000))
+	)
+{
+}
+
+void ConnectableSession::ConnectCallback()
+{
+	OnConnect();
+	// TODO: Add code to control the session
+}
+
+void ConnectableSession::DisconnectCallback()
+{
+	OnDisconnect();
+	// TODO: Add code to control the session
+}
+
+void ConnectableSession::SendCallback()
+{
+	OnSend();
+	// TODO: Add code to control the session
+}
+
+void ConnectableSession::RecvCallback()
+{
+	OnRecv();
+	// TODO: Add code to control the session
+}
+
+void ConnectableSession::ErrorCallback(int errCode)
+{
+	OnError(errCode);
+	// TODO: Add code to control the session
+}
+
+

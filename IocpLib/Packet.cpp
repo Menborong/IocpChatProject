@@ -5,13 +5,14 @@ Packet::Packet()
 {
 }
 
-Packet::Packet(const BYTE* data, UINT16 size, PacketType type)
+Packet::Packet(const BYTE* data, const UINT16 msgSize, const PacketType type)
 {
-	_header.size = size + _headerSize;
+	_header.size = msgSize + _headerSize;
 	_header.type = type;
 	_data = new BYTE[_header.size];
+	assert(_data != nullptr);
 	memcpy(_data, &_header, _headerSize);
-	memcpy(_data + _headerSize, data, size);
+	memcpy(_data + _headerSize, data, msgSize);
 	_isWriteComplete = true;
 }
 

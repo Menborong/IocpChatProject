@@ -8,12 +8,13 @@ LPFN_DISCONNECTEX SocketUtils::DisconnectEx = nullptr;
 bool SocketUtils::Init()
 {
 	WSADATA wsaData;
-	assert(::WSAStartup(MAKEWORD(2, 2), &wsaData) == 0);
+	if(::WSAStartup(MAKEWORD(2, 2), &wsaData))
+		assert(false && "WSAStartup failed");
 
 	SOCKET dummy = CreateSocket();
-	assert(InitExFunc(dummy, reinterpret_cast<LPVOID*>(&ConnectEx), WSAID_CONNECTEX));
-	assert(InitExFunc(dummy, reinterpret_cast<LPVOID*>(&DisconnectEx), WSAID_DISCONNECTEX));
-	assert(InitExFunc(dummy, reinterpret_cast<LPVOID*>(&AcceptEx), WSAID_ACCEPTEX));
+	InitExFunc(dummy, reinterpret_cast<LPVOID*>(&ConnectEx), WSAID_CONNECTEX);
+	InitExFunc(dummy, reinterpret_cast<LPVOID*>(&DisconnectEx), WSAID_DISCONNECTEX);
+	InitExFunc(dummy, reinterpret_cast<LPVOID*>(&AcceptEx), WSAID_ACCEPTEX);
 	CloseSocket(dummy);
 
 	return true;

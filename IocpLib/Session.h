@@ -65,3 +65,45 @@ private:
 	// Callback functions
 	std::function<void(ref<Session>)> _onRelease; // Called when session is disconnected
 };
+
+
+class AcceptableSession : public Session
+{
+public:
+	AcceptableSession(ref<IocpCore>& iocpCore);
+
+protected:
+	virtual void OnRecv() {}
+	virtual void OnSend() {}
+	virtual void OnAccept() {}
+	virtual void OnConnect() {}
+	virtual void OnDisconnect() {}
+	virtual void OnError(int errCode) {}
+
+private:
+	void AcceptCallback();
+	void DisconnectCallback();
+	void SendCallback();
+	void RecvCallback();
+	void ErrorCallback(int errCode);
+};
+
+class ConnectableSession : public Session
+{
+public:
+	ConnectableSession(ref<IocpCore>& iocpCore);
+
+protected:
+	virtual void OnRecv() {}
+	virtual void OnSend() {}
+	virtual void OnConnect() {}
+	virtual void OnDisconnect() {}
+	virtual void OnError(int errCode) {}
+
+private:
+	void ConnectCallback();
+	void DisconnectCallback();
+	void SendCallback();
+	void RecvCallback();
+	void ErrorCallback(int errCode);
+};
