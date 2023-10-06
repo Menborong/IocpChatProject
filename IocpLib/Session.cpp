@@ -67,110 +67,123 @@ void Session::Send(ref<Packet>& packet)
 	}
 }
 
-UINT32 Session::GetNumActiveOperation() const
-{
-	// 대상 연산이 많지 않으므로 모든 연산을 검사
-	UINT32 num = 0;
-	if(_acceptor)
-		num += _acceptor->IsRunning();
-	if(_connector)
-		num += _connector->IsRunning();
-	if(_disconnector)
-		num += _disconnector->IsRunning();
-	if(_sender)
-		num += _sender->IsRunning();
-	if(_receiver)
-		num += _receiver->IsRunning();
-	return num;
-}
-
 void Session::Recv()
 {
 	if (_receiver)
 		_receiver->Register(GetRef());
 }
 
-AcceptableSession::AcceptableSession(ref<IocpCore>& iocpCore)
+ChatSession::ChatSession(ref<IocpCore>& iocpCore, const std::function<void()>& releaseCallback)
 	: Session(iocpCore,
 		std::make_shared<Acceptor>([this] {AcceptCallback(); }, [this](int errCode) {ErrorCallback(errCode); }),
-		nullptr,
-		std::make_shared<Disconnector>([this] {DisconnectCallback(); }, [this](int errCode) {ErrorCallback(errCode); }),
-		std::make_shared<Sender>([this] {SendCallback(); }, [this](int errCode) {ErrorCallback(errCode); }),
-		std::make_shared<Receiver>([this] {RecvCallback(); }, [this](int errCode) {ErrorCallback(errCode); }, std::make_shared<RecvBuffer>(0x10000))
-	)
-{
-}
-
-void AcceptableSession::AcceptCallback()
-{
-	OnAccept();
-	// TODO: Add code to control the session
-}
-
-void AcceptableSession::DisconnectCallback()
-{
-	OnDisconnect();
-	// TODO: Add code to control the session
-
-}
-
-void AcceptableSession::SendCallback()
-{
-	OnSend();
-	// TODO: Add code to control the session
-}
-
-void AcceptableSession::RecvCallback()
-{
-	OnRecv();
-	// TODO: Add code to control the session
-}
-
-void AcceptableSession::ErrorCallback(int errCode)
-{
-	OnError(errCode);
-	// TODO: Add code to control the session
-}
-
-ConnectableSession::ConnectableSession(ref<IocpCore>& iocpCore)
-	: Session(iocpCore,
-		nullptr,
 		std::make_shared<Connector>([this] {ConnectCallback(); }, [this](int errCode) {ErrorCallback(errCode); }),
 		std::make_shared<Disconnector>([this] {DisconnectCallback(); }, [this](int errCode) {ErrorCallback(errCode); }),
 		std::make_shared<Sender>([this] {SendCallback(); }, [this](int errCode) {ErrorCallback(errCode); }),
 		std::make_shared<Receiver>([this] {RecvCallback(); }, [this](int errCode) {ErrorCallback(errCode); }, std::make_shared<RecvBuffer>(0x10000))
-	)
+	),
+	_releaseCallback(releaseCallback)
 {
 }
 
-void ConnectableSession::ConnectCallback()
+void ChatSession::Accept(ref<Listener>& listener)
 {
+	if(_status != SessionStatus::Idle)
+		return;
+
+	AddActiveOperator();
+	Session::Accept(listener);
+}
+
+void ChatSession::Connect(NetAddress addr)
+{
+	if (_status != SessionStatus::Idle)
+		return;
+
+	AddActiveOperator();
+	Session::Connect(addr);
+}
+
+void ChatSession::Disconnect()
+{
+	if(_status != SessionStatus::Running)
+		return;
+
+	AddActiveOperator();
+	Session::Disconnect();
+}
+
+void ChatSession::Send(ref<Packet>& packet)
+{
+	if(_status != SessionStatus::Running)
+		return;
+
+	AddActiveOperator();
+	Session::Send(packet);
+}
+
+void ChatSession::Recv()
+{
+	if (_status != SessionStatus::Running)
+		return;
+
+	AddActiveOperator();
+	Session::Recv();
+}
+
+void ChatSession::AcceptCallback()
+{
+	_status = SessionStatus::Running;
+	OnAccept();
+	SubActiveOperator();
+}
+
+void ChatSession::ConnectCallback()
+{
+	_status = SessionStatus::Running;
 	OnConnect();
-	// TODO: Add code to control the session
+	SubActiveOperator();
 }
 
-void ConnectableSession::DisconnectCallback()
+void ChatSession::DisconnectCallback()
 {
+	_status = SessionStatus::Stop;
 	OnDisconnect();
-	// TODO: Add code to control the session
+	SubActiveOperator();
 }
 
-void ConnectableSession::SendCallback()
+void ChatSession::SendCallback()
 {
 	OnSend();
-	// TODO: Add code to control the session
+	SubActiveOperator();
 }
 
-void ConnectableSession::RecvCallback()
+void ChatSession::RecvCallback()
 {
 	OnRecv();
-	// TODO: Add code to control the session
+	SubActiveOperator();
+
 }
 
-void ConnectableSession::ErrorCallback(int errCode)
+void ChatSession::ErrorCallback(int errCode)
 {
 	OnError(errCode);
-	// TODO: Add code to control the session
+	SubActiveOperator();
+}
+
+void ChatSession::AddActiveOperator()
+{
+	_numActiveOperators.fetch_add(1);
+}
+
+void ChatSession::SubActiveOperator()
+{
+	_numActiveOperators.fetch_sub(1);
+	if(_numActiveOperators.load() == 0 && _status.load() == SessionStatus::Stop)
+	{
+		_status.store(SessionStatus::Idle);
+		if(_releaseCallback)
+			_releaseCallback();
+	}
 }
 
 

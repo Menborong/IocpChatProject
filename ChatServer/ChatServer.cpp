@@ -1,55 +1,6 @@
 ﻿#include "pch.h"
-
+#include "ClientSession.h"
 #include "SocketUtils.h"
-#include "Session.h"
-
-
-class ClientSession : public AcceptableSession
-{
-public:
-	ClientSession(ref<IocpCore>& iocpCore)
-		: AcceptableSession(iocpCore)
-	{
-	}
-
-	// Callback functions
-	void OnAccept() override
-	{
-		std::cout << "OnAccept" << std::endl;
-		Recv();
-	}
-	//void Onconnect();
-	void OnDisconnect() override
-	{
-		std::cout << "OnDisconnect" << std::endl;
-	}
-	void OnSend() override
-	{
-		std::cout << "OnSend" << std::endl;
-	}
-	void OnRecv() override
-	{
-		std::cout << "OnRecv: ";
-		while(true)
-		{
-			ref<Packet> packet = GetRecvPacket();
-			if (packet == nullptr)
-				break;
-
-			std::string str(reinterpret_cast<const char*>(packet->GetBody()), packet->GetBodySize());
-			std::cout << str << "// ";
-		}
-		std::cout << std::endl;
-		
-		Recv();
-	}
-	void OnError(int errCode) override
-	{
-		std::cout << "OnError: " << errCode << std::endl;
-		Disconnect();
-	}
-};
-
 
 void threadMain(ref<IocpCore> iocpCore)
 {
@@ -70,7 +21,7 @@ int main()
 	session.Init();
 
 	std::vector<ref<Session>> sessions;
-	for (int i = 0; i < 100; i++)
+	for (int i = 0; i < 1000; i++)
 	{
 		sessions.emplace_back(std::make_shared<ClientSession>(iocpCore));
 		sessions[i]->Init();
