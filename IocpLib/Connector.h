@@ -3,6 +3,12 @@
 #include "IocpEvent.h"
 #include "NetAddress.h"
 
+
+/*-----------------------------------------------------------
+ * Connector
+ *
+ *-----------------------------------------------------------*/
+
 class Connector: public SessionNetOp
 {
 public:

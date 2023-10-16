@@ -8,7 +8,7 @@
  *
  *  Socket I/O Completion Port Event
  *  This Event is registered with ICOP through the register() methods of object.
- *  and when the Event is received from IOCP, the remaining task is performed through the object.
+ *  and when the Event is received from IOCP, the remaining task is performed through op->process().
  ---------------------------------------------------------------------------------------*/
 
 

@@ -2,6 +2,12 @@
 #include "SessionNetOp.h"
 #include "IocpEvent.h"
 
+
+/*-----------------------------------------------------------
+ * Disconnector
+ *
+ *-----------------------------------------------------------*/
+
 class Disconnector: public SessionNetOp
 {
 public:

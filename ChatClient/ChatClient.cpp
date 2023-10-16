@@ -2,46 +2,8 @@
 
 #include "SocketUtils.h"
 #include "Session.h"
-#include "RecvBuffer.h"
 #include "ServerSession.h"
 
-
-//class ServerSession : public ConnectableSession
-//{
-//public:
-//	ServerSession(ref<IocpCore>& iocpCore)
-//		: ConnectableSession(iocpCore)
-//	{}
-//
-//	// Callback functions
-//	// void OnAccept();
-//	void OnConnect() override
-//	{
-//		std::cout << "OnConnect" << std::endl;
-//		Recv();
-//		/*std::string str = "Hello World!";
-//		ref<Packet> packet = std::make_shared<Packet>(reinterpret_cast<const BYTE*>(str.data()), static_cast<UINT32>(str.size()), PacketType::Chat);
-//		Send(packet);*/
-//	}
-//	void OnDisconnect() override
-//	{
-//		std::cout << "OnDisconnect" << std::endl;
-//	}
-//	void OnSend() override
-//	{
-//		std::cout << "OnSend" << std::endl;
-//	}
-//	void OnRecv() override
-//	{
-//		std::cout << "OnRecv" << std::endl;
-//		Recv();
-//	}
-//	void OnError(int errCode) override
-//	{
-//		std::cout << "OnError: " << errCode << std::endl;
-//		Disconnect();
-//	}
-//};
 
 void threadMain(ref<IocpCore> iocpCore)
 {

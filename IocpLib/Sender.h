@@ -3,6 +3,12 @@
 #include "Packet.h"
 #include "IocpEvent.h"
 
+
+/*-----------------------------------------------------------
+ * Sender
+ *
+ *-----------------------------------------------------------*/
+
 class Sender: public SessionNetOp
 {
 public:
