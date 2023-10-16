@@ -3,6 +3,11 @@
 #include "SessionNetOp.h"
 #include "LIstener.h"
 
+/*-----------------------------------------------------------
+ * Acceptor
+ *
+ *-----------------------------------------------------------*/
+
 class Acceptor: public SessionNetOp
 {
 public:

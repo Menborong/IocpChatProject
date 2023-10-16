@@ -13,6 +13,14 @@
  *
  * Socket 관리, 연결, 그리고 관련 통신을 담당하는 클래스
  * Accept(), Connect(), Disconnect(), Send() 함수를 통해 Remote와 통신처리
+ *
+ * Accept(ref<Listener>): Remote로의 연결 대기 등록
+ * Connect(NetAddress): Remote로의 연결 시도 등록
+ * Disconnect(): Remote와의 연결 해제 등록
+ * Send(ref<Packet>): Remote로의 Packet 전송 등록
+ * GetRecvPacket(): Remote로부터 수신된 Packet 반환, 실패시 nullptr 반환
+ *
+ * Recv(): Remote로부터 Packet 수신 등록 (이 함수는 외부에서 호출할 수 없음)
  ----------------------------------------------------------------------------*/
 
 class Session: public IocpObject
@@ -57,6 +65,9 @@ private:
  * 실제 Chatting을 위한 Session Class
  * Session의 상태, Session간의 기본적인 통신 메커니즘,
  * 안정적인 Disconnect 처리를 해당 Class에서 처리한다.
+ *
+ * 다음의 함수들을 오버라이딩하여 IOCP 요청 결과를 처리할 수 있음:
+ * OnRecv(), OnSend(), OnAccept(), OnConnect(), OnDisconnect(), OnError()
  ----------------------------------------------------------------------------*/
 
 enum class SessionStatus

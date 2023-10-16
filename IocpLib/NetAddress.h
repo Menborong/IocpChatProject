@@ -4,7 +4,7 @@
 /*-----------------------------------------------------------
  *  NetAddress
  *
- *	Class that manages the IPV4 address system used in Socket
+ *  Class that manages the IPV4 address system used in Socket
  ------------------------------------------------------------*/
 
 class NetAddress
