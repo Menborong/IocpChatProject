@@ -23,7 +23,7 @@ A) IOCP에서의 비동기 처리에 의한 코드 흐름을 동기 처리의 �
 
     동기 처리: Session 호출 -> SessionNetOp 호출 -> I/O 작업 처리 -> SessionNetOp의 이후 실행 후 리턴 -> Session의 이후 실행 후 리턴
     
-    비동기 처리: Session 호출 -> SessionNetOp 호출 -> I/O 작업 요청 / I/O 작업 완료 -> SessionNetOp의 호출 및 SessionNetOp의 실행 -> Session의 콜백함수 호출, Session의 이후 실행 후 리턴
+    비동기 처리: Session 호출 -> SessionNetOp 호출 -> I/O 작업 요청 \\ I/O 작업 완료 -> SessionNetOp의 호출 및 SessionNetOp의 실행 -> Session의 콜백함수 호출, Session의 이후 실행 후 리턴
 
 
 ## TODO
