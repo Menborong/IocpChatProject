@@ -7,6 +7,9 @@
     <Filter Include="Pch">
       <UniqueIdentifier>{8c34a7b5-8167-43e9-acb2-e10f4770f5ce}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Content">
+      <UniqueIdentifier>{68e0bd55-c7bb-45a1-b92d-ad92ee08e23e}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ChatServer.cpp">
@@ -18,6 +21,12 @@
     <ClCompile Include="ClientSession.cpp">
       <Filter>Main</Filter>
     </ClCompile>
+    <ClCompile Include="Room.cpp">
+      <Filter>Content</Filter>
+    </ClCompile>
+    <ClCompile Include="User.cpp">
+      <Filter>Content</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Pch.h">
@@ -25,6 +34,18 @@
     </ClInclude>
     <ClInclude Include="ClientSession.h">
       <Filter>Main</Filter>
+    </ClInclude>
+    <ClInclude Include="User.h">
+      <Filter>Content</Filter>
+    </ClInclude>
+    <ClInclude Include="Room.h">
+      <Filter>Content</Filter>
+    </ClInclude>
+    <ClInclude Include="IUser.h">
+      <Filter>Content</Filter>
+    </ClInclude>
+    <ClInclude Include="IRoom.h">
+      <Filter>Content</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

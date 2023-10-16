@@ -5,6 +5,7 @@ enum class PacketType : UINT16
 {
 	Chat,
 	Error,
+	System,
 };
 
 class PacketHeader

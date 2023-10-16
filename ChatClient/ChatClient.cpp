@@ -60,9 +60,6 @@ int main()
 	ref<IocpCore> iocpCore = std::make_shared<IocpCore>();
 	NetAddress address("127.0.0.1", 7777);
 
-	ServerSession session(iocpCore);
-	session.Init();
-
 	std::vector<ref<Session>> sessions;
 	for (int i = 0; i < 1000; i++)
 	{
