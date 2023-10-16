@@ -19,9 +19,6 @@
     <Filter Include="IocpCore">
       <UniqueIdentifier>{c3e1127e-02e9-47b2-ac18-f1f4c5c7f7f0}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Service">
-      <UniqueIdentifier>{9c8d9717-577b-46c3-b2ce-7446785718f5}</UniqueIdentifier>
-    </Filter>
     <Filter Include="IocpObject\Session">
       <UniqueIdentifier>{2362b482-6c29-46bb-b43e-fbfbc121e415}</UniqueIdentifier>
     </Filter>
@@ -51,11 +48,7 @@
     <ClInclude Include="Listener.h">
       <Filter>IocpObject</Filter>
     </ClInclude>
-    <ClInclude Include="Service.h">
-      <Filter>Service</Filter>
-    </ClInclude>
     <ClInclude Include="RecvBuffer.h" />
-    <ClInclude Include="SendBuffer.h" />
     <ClInclude Include="SessionNetOp.h">
       <Filter>IocpObject\Session</Filter>
     </ClInclude>
@@ -104,11 +97,7 @@
     <ClCompile Include="Listener.cpp">
       <Filter>IocpObject</Filter>
     </ClCompile>
-    <ClCompile Include="Service.cpp">
-      <Filter>Service</Filter>
-    </ClCompile>
     <ClCompile Include="RecvBuffer.cpp" />
-    <ClCompile Include="SendBuffer.cpp" />
     <ClCompile Include="SessionNetOp.cpp">
       <Filter>IocpObject\Session</Filter>
     </ClCompile>
