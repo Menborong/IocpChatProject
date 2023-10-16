@@ -19,7 +19,7 @@ Server/Client 공용으로 사용되는 IOCP 라이브러리
 
 Q) 콜백 함수를 사용한 이유?
 
-A) IOCP에서의 비동기 처리에 의한 코드 흐름을 동기 처리의 방식과 유사하게 처리하기 위해, 그리고 
+A) IOCP에서의 비동기 처리에 의한 코드 흐름을 동기 처리의 방식과 유사하게 이후 처리를 Session에서 제어할 수 있음
 
     동기 처리: Session 호출 -> SessionNetOp 호출 -> I/O 작업 처리 -> SessionNetOp의 이후 실행 후 리턴 -> Session의 이후 실행 후 리턴
     
