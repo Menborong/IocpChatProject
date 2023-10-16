@@ -27,28 +27,70 @@ UINT32 RecvBuffer::GetNextRead() const
 		return _capacity - _readPos;
 }
 
-UINT32 RecvBuffer::Write(UINT32 numBytes)
+UINT32 RecvBuffer::Write(UINT32 numBytes, BYTE* from)
 {
-	const UINT32 bytesToWrite = (std::min)(GetNextWrite(), numBytes);
-	_writePos += bytesToWrite;
-	if(_writePos == _capacity)
-		_writePos = 0;
+	UINT32 bytesWritten = 0;
+	while(bytesWritten < numBytes)
+	{
+		//const UINT32 available = GetNextWrite();
+		const UINT32 available = min(GetNextWrite(), numBytes - bytesWritten);
+		if(available == 0)
+			break;
+		memcpy(&_buffer[_writePos], &from[bytesWritten], available);
+		bytesWritten += available;
+		_writePos += available;
+		if(_writePos == _capacity) // Circular buffer
+			_writePos = 0;
+	}
 
-	return bytesToWrite;
+	return bytesWritten;
 }
 
-UINT32 RecvBuffer::Read(UINT32 numBytes)
+UINT32 RecvBuffer::Read(UINT32 numBytes, BYTE* to)
 {
-	const UINT32 bytesToRead = (std::min)(GetNextRead(), numBytes);
-	_readPos += bytesToRead;
-	if(_readPos == _capacity)
-		_readPos = 0;
+	UINT32 bytesRead = 0;
+	while(bytesRead < numBytes)
+	{
+		//const UINT32 available = GetNextRead();
+		const UINT32 available = min(GetNextRead(), numBytes - bytesRead);
+		if(available == 0)
+			break;
+		memcpy(&to[bytesRead], &_buffer[_readPos], available);
+		bytesRead += available;
+		_readPos += available;
+		if(_readPos == _capacity) // Circular buffer
+			_readPos = 0;
+	}
 
-	return bytesToRead;
+	return bytesRead;	
 }
 
 void RecvBuffer::Clear()
 {
 	_readPos = 0;
 	_writePos = 0;
+}
+
+bool RecvBuffer::MoveWritePos(UINT32 numBytes)
+{
+	if(numBytes > GetNextWrite())
+	return false;
+
+	_writePos += numBytes;
+	if(_writePos == _capacity) // Circular buffer
+		_writePos = 0;
+
+	return true;
+}
+
+bool RecvBuffer::MoveReadPos(UINT32 numBytes)
+{
+	if(numBytes > GetNextRead())
+	return false;
+
+	_readPos += numBytes;
+	if(_readPos == _capacity) // Circular buffer
+		_readPos = 0;
+
+	return true;
 }

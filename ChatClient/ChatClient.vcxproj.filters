@@ -12,9 +12,19 @@
     <ClCompile Include="ChatClient.cpp">
       <Filter>Main</Filter>
     </ClCompile>
-    <ClCompile Include="Pch.cpp" />
+    <ClCompile Include="ServerSession.cpp">
+      <Filter>Main</Filter>
+    </ClCompile>
+    <ClCompile Include="Pch.cpp">
+      <Filter>Pch</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Pch.h" />
+    <ClInclude Include="ServerSession.h">
+      <Filter>Main</Filter>
+    </ClInclude>
+    <ClInclude Include="Pch.h">
+      <Filter>Pch</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

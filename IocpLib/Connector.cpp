@@ -13,10 +13,8 @@ Connector::~Connector()
 {
 }
 
-void Connector::Register()
+void Connector::Register(ref<IocpObject> owner)
 {
-	// TODO: Check the net address is valid
-
 	// Socket reuse
 	if(SocketUtils::SetReuseAddr(_socket, true) == false)
 	{
@@ -31,9 +29,11 @@ void Connector::Register()
 		return;
 	}
 
-	_event.Init();
+	if (_isRunning.exchange(true) == true)
+		return;
+
+	_event.owner = owner;
 	_event.op = shared_from_this();
-	_isRunning.store(true);
 
 	DWORD bytes = 0;
 	SOCKADDR_IN sockAddr = _netAddr.GetAddress();
@@ -52,7 +52,7 @@ void Connector::Register()
 		const int errCode = WSAGetLastError();
 		if (errCode != WSA_IO_PENDING)
 		{
-			_event.op = nullptr; // release the reference
+			_event.Clear();
 			_isRunning.store(false);
 			_onError(errCode);
 			return;
@@ -62,7 +62,7 @@ void Connector::Register()
 
 void Connector::Process(bool ret, DWORD numBytes)
 {
-	_event.op = nullptr; // release the reference
+	_event.Clear();
 	_isRunning.store(false);
 	_onProcess();
 }

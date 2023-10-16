@@ -4,16 +4,17 @@
 #include "SocketUtils.h"
 
 
-Acceptor::Acceptor(const std::function<void()>& onProcees, const std::function<void(int errCode)>& onError,
-	ref<Listener>& listener)
-		: SessionNetOp(onProcees, onError), _listener(listener)
+Acceptor::Acceptor(const std::function<void()>& onProcees, const std::function<void(int errCode)>& onError)
+		: SessionNetOp(onProcees, onError)
 {
 }
 
-void Acceptor::Register()
+void Acceptor::Register(ref<IocpObject> owner)
 {
-	_isRunning.store(true);
-	_event.Init();
+	if (_isRunning.exchange(true) == true)
+		return;
+
+	_event.owner = owner;
 	_event.op = shared_from_this();
 
 	DWORD bytes = 0;
@@ -33,7 +34,7 @@ void Acceptor::Register()
 		const int errCode = WSAGetLastError();
 		if(errCode != WSA_IO_PENDING)
 		{
-			_event.op = nullptr; // release the reference
+			_event.Clear();
 			_isRunning.store(false);
 			_onError(errCode);
 			return;
@@ -46,7 +47,7 @@ void Acceptor::Process(bool ret, DWORD numBytes)
 	// Get socket option from the listen socket
 	if (SocketUtils::SetUpdateAcceptSocket(_socket, _listener->GetSocket()) == false)
 	{
-		_event.op = nullptr; // release the reference
+		_event.Clear();
 		_isRunning.store(false);
 		_onError(WSAGetLastError());
 		return;

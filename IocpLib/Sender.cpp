@@ -11,45 +11,45 @@ Sender::~Sender()
 {
 }
 
-void Sender::Push(ref<SendBuffer>& buffer)
+void Sender::Push(const ref<Packet>& packet)
 {
 	std::lock_guard<std::mutex> lock(_mutex);
-	_sendQueue.emplace(buffer);
+	_packetQueue.push(packet);
 }
 
-void Sender::Register()
+void Sender::Register(ref<IocpObject> owner)
 {
 	// Caution: Thread-Safety
 	if(_isRunning.exchange(true) == true)
 		return;
 
-	_event.Init();
+	_event.owner = owner;
 	_event.op = shared_from_this();
 
 	// Scatter-Gather I/O
 	{
 		std::lock_guard<std::mutex> lock(_mutex);
 
-		if(_sendQueue.empty())
+		if(_packetQueue.empty())
 		{
-			_event.op = nullptr; // release the reference
+			_event.Clear();
 			_isRunning.store(false);
 			return;
 		}
 
-		while (!_sendQueue.empty())
+		while (!_packetQueue.empty())
 		{
-			_sendingBufs.emplace_back(_sendQueue.front());
-			_sendQueue.pop();
+			_sendingPackets.emplace_back(_packetQueue.front());
+			_packetQueue.pop();
 		}
 	}
 
 	std::vector<WSABUF> wsaBufs;
-	for (const auto& buffer : _sendingBufs)
+	for(const auto& packet: _sendingPackets)
 	{
 		WSABUF wsaBuf;
-		wsaBuf.buf = reinterpret_cast<char*>(buffer->GetBuffer());
-		wsaBuf.len = buffer->GetWriteSize();
+		wsaBuf.buf = reinterpret_cast<char*>(packet->GetBYTE());
+		wsaBuf.len = packet->GetSize();
 		wsaBufs.emplace_back(wsaBuf);
 	}
 
@@ -69,8 +69,8 @@ void Sender::Register()
 		const int errCode = WSAGetLastError();
 		if (errCode != WSA_IO_PENDING)
 		{
-			_sendingBufs.clear();
-			_event.op = nullptr; // release the reference
+			_sendingPackets.clear();
+			_event.Clear();
 			_isRunning.store(false);
 			_onError(errCode);
 			return;
@@ -80,17 +80,16 @@ void Sender::Register()
 
 void Sender::Process(bool ret, DWORD numBytes)
 {
-	_sendingBufs.clear();
-
+	_sendingPackets.clear();
 	if (numBytes == 0)
 	{
 		// normal disconnect from remote
-		_event.op = nullptr; // release ref
+		_event.Clear();
 		_isRunning.store(false);
 		_onError(0);
 	}
 
-	_event.op = nullptr; // release the reference
+	_event.Clear();
 	_isRunning.store(false);
 	_onProcess();
 }

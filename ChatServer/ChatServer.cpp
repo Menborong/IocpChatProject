@@ -1,55 +1,6 @@
 ﻿#include "pch.h"
-
+#include "ClientSession.h"
 #include "SocketUtils.h"
-#include "Session.h"
-
-
-class ClientSession : public Session
-{
-public:
-	ClientSession(ref<IocpCore>& iocpCore, ref<Listener>& listener)
-		: Session(
-			iocpCore, listener,
-			std::make_shared<Acceptor>([this] { OnAccept(); }, [this](int errCode) { OnError(errCode); }, listener),
-			nullptr,
-			std::make_shared<Disconnector>([this] { OnDisconnect(); }, [this](int errCode) { OnError(errCode); }),
-			std::make_shared<Sender>([this] { OnSend(); }, [this](int errCode) { OnError(errCode); }),
-			std::make_shared<Receiver>([this] { OnRecv(); }, [this](int errCode) { OnError(errCode); })
-		)
-	{}
-
-	// Callback functions
-	void OnAccept()
-	{
-		std::cout << "OnAccept" << std::endl;
-		Recv();
-	}
-	//void Onconnect();
-	void OnDisconnect()
-	{
-		std::cout << "OnDisconnect" << std::endl;
-		Accept();
-	}
-	void OnSend()
-	{
-		std::cout << "OnSend" << std::endl;
-	}
-	void OnRecv()
-	{
-		std::cout << "OnRecv: ";
-		char buf[1024] = {0};
-		UINT len = GetRecvMessage(reinterpret_cast<BYTE*>(buf), 1024);
-		std::cout << buf << std::endl;
-		
-		Recv();
-	}
-	void OnError(int errCode)
-	{
-		std::cout << "OnError: " << errCode << std::endl;
-		Disconnect();
-	}
-};
-
 
 void threadMain(ref<IocpCore> iocpCore)
 {
@@ -66,17 +17,16 @@ int main()
 	NetAddress address(7777);
 	listener->Init(iocpCore, address);
 
-	ClientSession session(iocpCore, listener);
+	ClientSession session(iocpCore);
 	session.Init();
 
 	std::vector<ref<Session>> sessions;
-	for(int i=0; i<10; i++)
+	for (int i = 0; i < 1000; i++)
 	{
-		sessions.emplace_back(std::make_shared<ClientSession>(iocpCore, listener));
+		sessions.emplace_back(std::make_shared<ClientSession>(iocpCore));
 		sessions[i]->Init();
-		sessions[i]->Accept();
+		sessions[i]->Accept(listener);
 	}
-
 
 	std::vector<std::thread> threads;
 	for (int i = 0; i < 8; i++)

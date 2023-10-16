@@ -1,6 +1,7 @@
 #pragma once
 
 #include "SessionNetOp.h"
+#include "IocpObject.h"
 
 /*---------------------------------------------------------------------------------------
  *  IocpEvent
@@ -24,10 +25,11 @@ class IocpEvent: public OVERLAPPED
 {
 public:
 	IocpEvent(IocpEventType type);
-	void Init();
+	void Clear();
 public:
 	IocpEventType type;
-	ref<SessionNetOp> op;
+	ref<IocpObject> owner = nullptr;
+	ref<SessionNetOp> op = nullptr;
 };;
 
 

@@ -2,53 +2,46 @@
 
 #include "SocketUtils.h"
 #include "Session.h"
+#include "RecvBuffer.h"
+#include "ServerSession.h"
 
 
-class ServerSession : public Session
-{
-public:
-	ServerSession(ref<IocpCore>& iocpCore)
-		: Session(
-			iocpCore, nullptr,
-			nullptr,
-			std::make_shared<Connector>([this] { OnConnect(); }, [this](int errCode) { OnError(errCode); }),
-			std::make_shared<Disconnector>([this] { OnDisconnect(); }, [this](int errCode) { OnError(errCode); }),
-			std::make_shared<Sender>([this] { OnSend(); }, [this](int errCode) { OnError(errCode); }),
-			std::make_shared<Receiver>([this] { OnRecv(); }, [this](int errCode) { OnError(errCode); })
-		)
-	{}
-
-	// Callback functions
-	/*void OnAccept();*/
-	void OnConnect()
-	{
-		std::cout << "OnConnect" << std::endl;
-		Recv();
-		std::string str = "Hello World!";
-		ref<SendBuffer> sendBuffer = std::make_shared<SendBuffer>(str.size());
-		sendBuffer->Write(str.c_str(), static_cast<UINT32>(str.size()));
-		Send(sendBuffer);
-	}
-	void OnDisconnect()
-	{
-		std::cout << "OnDisconnect" << std::endl;
-	}
-	void OnSend()
-	{
-		std::cout << "OnSend" << std::endl;
-	}
-	void OnRecv()
-	{
-		std::cout << "OnRecv" << std::endl;
-		Recv();
-	}
-	void OnError(int errCode)
-	{
-		std::cout << "OnError: " << errCode << std::endl;
-		Disconnect();
-	}
-};
-
+//class ServerSession : public ConnectableSession
+//{
+//public:
+//	ServerSession(ref<IocpCore>& iocpCore)
+//		: ConnectableSession(iocpCore)
+//	{}
+//
+//	// Callback functions
+//	// void OnAccept();
+//	void OnConnect() override
+//	{
+//		std::cout << "OnConnect" << std::endl;
+//		Recv();
+//		/*std::string str = "Hello World!";
+//		ref<Packet> packet = std::make_shared<Packet>(reinterpret_cast<const BYTE*>(str.data()), static_cast<UINT32>(str.size()), PacketType::Chat);
+//		Send(packet);*/
+//	}
+//	void OnDisconnect() override
+//	{
+//		std::cout << "OnDisconnect" << std::endl;
+//	}
+//	void OnSend() override
+//	{
+//		std::cout << "OnSend" << std::endl;
+//	}
+//	void OnRecv() override
+//	{
+//		std::cout << "OnRecv" << std::endl;
+//		Recv();
+//	}
+//	void OnError(int errCode) override
+//	{
+//		std::cout << "OnError: " << errCode << std::endl;
+//		Disconnect();
+//	}
+//};
 
 void threadMain(ref<IocpCore> iocpCore)
 {
@@ -71,7 +64,7 @@ int main()
 	session.Init();
 
 	std::vector<ref<Session>> sessions;
-	for (int i = 0; i < 10; i++)
+	for (int i = 0; i < 1000; i++)
 	{
 		sessions.emplace_back(std::make_shared<ServerSession>(iocpCore));
 		sessions[i]->Init();
@@ -83,6 +76,17 @@ int main()
 	for (int i = 0; i < 8; i++)
 	{
 		threads.emplace_back(threadMain, iocpCore);
+	}
+
+	while(true)
+	{
+		std::string str = "Hello World!";
+		ref<Packet> packet = std::make_shared<Packet>(reinterpret_cast<const BYTE*>(str.data()), static_cast<UINT32>(str.size()), PacketType::Chat);
+		for(const auto& s: sessions)
+		{
+			s->Send(packet);
+		}
+		std::this_thread::sleep_for(100ms);
 	}
 
 	for (int i = 0; i < 8; i++)

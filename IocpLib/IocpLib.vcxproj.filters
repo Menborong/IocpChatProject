@@ -77,6 +77,10 @@
     <ClInclude Include="Disconnector.h">
       <Filter>IocpObject\Session</Filter>
     </ClInclude>
+    <ClInclude Include="IocpObject.h">
+      <Filter>IocpObject</Filter>
+    </ClInclude>
+    <ClInclude Include="Packet.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp">
@@ -126,5 +130,9 @@
     <ClCompile Include="Disconnector.cpp">
       <Filter>IocpObject\Session</Filter>
     </ClCompile>
+    <ClCompile Include="IocpObject.cpp">
+      <Filter>IocpObject</Filter>
+    </ClCompile>
+    <ClCompile Include="Packet.cpp" />
   </ItemGroup>
 </Project>

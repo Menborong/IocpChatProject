@@ -44,5 +44,7 @@ void IocpCore::Dispatch(INT32 timeout)
 	);
 
 	ref<SessionNetOp> op = event->op; // prevent object from being destroyed
+	ref<IocpObject> owner = event->owner; // prevent object from being destroyed
+
 	op->Process(ret, numBytes);
 }
